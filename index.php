@@ -98,11 +98,13 @@ $surveys = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td class="px-6 py-4">
                             <?php
                             if ($survey['members']) {
+                                $formatted_members = [];
                                 $members = explode(',', $survey['members']);
                                 foreach ($members as $member) {
                                     list($name, $birthday) = explode('|', $member);
-                                    echo htmlspecialchars("$name ($birthday)<br>");
+                                    $formatted_members[] = htmlspecialchars("$name (" . date('Y-m-d', strtotime($birthday)) . ")");
                                 }
+                                echo implode(', ', $formatted_members);
                             }
                             ?>
                         </td>

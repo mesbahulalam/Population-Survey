@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div id="members-container">
-                    <h3 class="text-lg font-semibold mb-4">Members</h3>
+                    <h3 class="text-lg font-semibold mb-4">Family Members</h3>
                     <div class="member-entry mb-4">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
