@@ -102,7 +102,7 @@ $surveys = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 $members = explode(',', $survey['members']);
                                 foreach ($members as $member) {
                                     list($name, $birthday) = explode('|', $member);
-                                    $formatted_members[] = htmlspecialchars("$name (" . date('Y-m-d', strtotime($birthday)) . ")");
+                                    $formatted_members[] = htmlspecialchars("$name (" . date('Y', strtotime($birthday)) . ")");
                                 }
                                 echo implode(', ', $formatted_members);
                             }
