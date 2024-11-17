@@ -3,6 +3,20 @@
 session_start();
 require_once 'config.php';
 
+// Stats Queries
+$stats = [
+    'total_surveys' => $db->query("SELECT COUNT(*) FROM surveys")->fetchColumn(),
+    'total_members' => $db->query("SELECT COUNT(*) FROM members")->fetchColumn(),
+    'avg_members_per_survey' => $db->query("SELECT ROUND(AVG(member_count), 1) FROM 
+        (SELECT COUNT(*) as member_count FROM members GROUP BY survey_id) as counts")->fetchColumn(),
+    'divisions_count' => $db->query("SELECT COUNT(DISTINCT division) FROM surveys")->fetchColumn(),
+    'districts_count' => $db->query("SELECT COUNT(DISTINCT district) FROM surveys")->fetchColumn()
+];
+
+// Get unique divisions and districts for select2
+$divisions = $db->query("SELECT DISTINCT division FROM surveys ORDER BY division")->fetchAll(PDO::FETCH_COLUMN);
+$districts = $db->query("SELECT DISTINCT district FROM surveys ORDER BY district")->fetchAll(PDO::FETCH_COLUMN);
+
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 10;
 $offset = ($page - 1) * $limit;
@@ -29,13 +43,41 @@ $surveys = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Population Survey</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-600">Total Surveys</h3>
+                <p class="text-3xl font-bold text-blue-600"><?= number_format($stats['total_surveys']) ?></p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-600">Total Members</h3>
+                <p class="text-3xl font-bold text-green-600"><?= number_format($stats['total_members']) ?></p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-600">Avg Members/Survey</h3>
+                <p class="text-3xl font-bold text-purple-600"><?= $stats['avg_members_per_survey'] ?></p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-600">Total Divisions</h3>
+                <p class="text-3xl font-bold text-orange-600"><?= number_format($stats['divisions_count']) ?></p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-600">Total Districts</h3>
+                <p class="text-3xl font-bold text-red-600"><?= number_format($stats['districts_count']) ?></p>
+            </div>
+        </div>
+
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Population Survey</h1>
             <a href="add.php" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add New Survey</a>
         </div>
+
         <div class="bg-white rounded-lg shadow overflow-x-auto">
             <table class="min-w-full">
                 <thead>
