@@ -51,20 +51,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="max-w-2xl mx-auto">
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold">Add New Survey</h1>
-                <a href="index.php" class="text-blue-500 hover:text-blue-600">Back to List</a>
+                <a href="index.php" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Back to List</a>
             </div>
 
             <form method="POST" class="bg-white rounded-lg shadow p-6">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="division">Division</label>
-                    <input type="text" name="division" id="division" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <!-- <input type="text" name="division" id="division" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"> -->
+                    <select name="division" id="division" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            onchange="update_districts()">
+                        <option value="">Select Division</option>
+                    </select>
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="district">District</label>
-                    <input type="text" name="district" id="district" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <!-- <input type="text" name="district" id="district" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"> -->
+                    <select name="district" id="district" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Select District</option>
+                    </select>
                 </div>
 
                 <div class="mb-4">
@@ -128,6 +137,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             `;
             container.appendChild(newMember);
             memberCount++;
+        }
+        function populate_divisions(selector){
+            var divisions = [
+                "Barisal",
+                "Chittagong",
+                "Dhaka",
+                "Khulna",
+                "Mymensingh",
+                "Rajshahi",
+                "Rangpur",
+                "Sylhet"
+            ];
+            var select = document.getElementById(selector);
+            for(index in divisions) {
+                var option = document.createElement("option");
+                option.text = divisions[index];
+                option.value = divisions[index];
+                select.add(option);
+            }
+        }
+        populate_divisions('division');
+        function update_districts(){
+            // Get the selected division
+            // var division = document.getElementById('division').value;
+            var division = event.target.value;
+            // Get the districts select element
+            var district_select = document.getElementById('district');
+            // Remove all existing options
+            district_select.options.length = 0;
+            // Get the districts for the selected division
+            var districts = [];
+            switch(division) {
+                case 'Barisal':
+                    districts = ["Barguna", "Barisal", "Bhola", "Jhalokati", "Patuakhali", "Pirojpur"];
+                    break;
+                case 'Chittagong':
+                    districts = ["Bandarban", "Brahmanbaria", "Chandpur", "Chittagong", "Comilla", "Cox's Bazar", "Feni", "Khagrachhari", "Lakshmipur", "Noakhali", "Rangamati"];
+                    break;
+                case 'Dhaka':
+                    districts = ["Dhaka", "Faridpur", "Gazipur", "Gopalganj", "Kishoreganj", "Madaripur", "Manikganj", "Munshiganj", "Narayanganj", "Narsingdi", "Rajbari", "Shariatpur", "Tangail"];
+                    break;
+                case 'Rajshahi':
+                    districts = ["Bogra", "Joypurhat", "Naogaon", "Natore", "Chapainawabganj", "Pabna", "Rajshahi", "Sirajganj"];
+                    break;
+                case 'Rangpur':
+                    districts = ["Dinajpur", "Gaibandha", "Kurigram", "Lalmonirhat", "Nilphamari", "Panchagarh", "Rangpur", "Thakurgaon"];
+                    break;
+                case 'Sylhet':
+                    districts = ["Habiganj", "Maulvibazar", "Sunamganj", "Sylhet"];
+                    break;
+                case 'Khulna':
+                    districts = ["Bagerhat", "Chuadanga", "Jessore", "Jhenaidah", "Khulna", "Kushtia", "Magura", "Meherpur", "Narail", "Satkhira"];
+                    break;
+                case 'Mymensingh':
+                    districts = ["Jamalpur", "Mymensingh", "Netrokona", "Sherpur"];
+                    break;
+                }
+            for(index in districts) {
+                district_select.options[district_select.options.length] = new Option(districts[index], districts[index]);
+            }
         }
     </script>
 </body>
