@@ -1,6 +1,13 @@
 CREATE DATABASE population_survey;
 USE population_survey;
 
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(100) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE surveys (
     id INT PRIMARY KEY AUTO_INCREMENT,
     division VARCHAR(100) NOT NULL,
@@ -13,7 +20,9 @@ CREATE TABLE members (
     id INT PRIMARY KEY AUTO_INCREMENT,
     survey_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
+    gender ENUM('m', 'f') NOT NULL,
     birthday DATE NOT NULL,
+    occupation ENUM('employed', 'unemployed', 'student', 'retired', 'homemaker') NOT NULL,
     FOREIGN KEY (survey_id) REFERENCES surveys(id) ON DELETE CASCADE
 );
 
@@ -67,7 +76,7 @@ BEGIN
         SET j = 1;
         WHILE j <= 2 + FLOOR(RAND() * 5) DO
             -- Insert member with random name and birthdate
-            INSERT INTO members (survey_id, name, birthday)
+            INSERT INTO members (survey_id, name, gender, birthday, occupation)
             VALUES (
                 survey_id,
                 ELT(1 + FLOOR(RAND() * 20), 
@@ -75,7 +84,11 @@ BEGIN
                     'Hossain', 'Begum', 'Islam', 'Rahman', 'Ali',
                     'Khatun', 'Akter', 'Miah', 'Uddin', 'Khan',
                     'Siddique', 'Rashid', 'Matin', 'Reza', 'Sultana'),
-                DATE_SUB(CURRENT_DATE, INTERVAL FLOOR(RAND() * 30000) DAY)
+                -- gender
+                ELT(1 + FLOOR(RAND() * 2), 'm', 'f'),
+                DATE_SUB(CURRENT_DATE, INTERVAL FLOOR(RAND() * 30000) DAY),
+                -- occupation
+                ELT(1 + FLOOR(RAND() * 5), 'employed', 'unemployed', 'student', 'retired', 'homemaker')
             );
             SET j = j + 1;
         END WHILE;

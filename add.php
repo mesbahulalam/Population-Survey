@@ -18,11 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         foreach ($_POST['members'] as $member) {
             if (!empty($member['name']) && !empty($member['birthday'])) {
-                $stmt = $db->prepare("INSERT INTO members (survey_id, name, birthday) VALUES (:survey_id, :name, :birthday)");
+                $stmt = $db->prepare("INSERT INTO members (survey_id, name, gender, birthday, occupation) VALUES (:survey_id, :name, :gender, :birthday, :occupation)");
                 $stmt->execute([
                     ':survey_id' => $survey_id,
                     ':name' => $member['name'],
-                    ':birthday' => $member['birthday']
+                    ':gender' => $member['gender'],
+                    ':birthday' => $member['birthday'],
+                    ':occupation' => $member['occupation']
                 ]);
             }
         }
@@ -44,7 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Survey</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
@@ -60,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- <input type="text" name="division" id="division" required
                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"> -->
                     <select name="division" id="division" required
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight bg-white focus:outline-none focus:shadow-outline"
                             onchange="update_districts()">
                         <option value="">Select Division</option>
                     </select>
@@ -71,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- <input type="text" name="district" id="district" required
                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"> -->
                     <select name="district" id="district" required
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight bg-white focus:outline-none focus:shadow-outline">
                         <option value="">Select District</option>
                     </select>
                 </div>
@@ -92,9 +95,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             </div>
                             <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Gender</label>
+                                <select name="members[0][gender]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight bg-white focus:outline-none focus:shadow-outline">
+                                    <option value="">Select Gender</option>
+                                    <option value="m">Male</option>
+                                    <option value="f">Female</option>
+                                </select>
+                            </div>
+                            <div>
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Birthday</label>
                                 <input type="date" name="members[0][birthday]"
                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Occupation</label>
+                                <select name="members[0][occupation]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight bg-white focus:outline-none focus:shadow-outline">
+                                    <option value="">Select Occupation</option>
+                                    <option value="employed">Employed</option>
+                                    <option value="unemployed">Unemployed</option>
+                                    <option value="student">Student</option>
+                                    <option value="retired">Retired</option>
+                                    <option value="homemaker">Homemaker</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -122,16 +144,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const newMember = document.createElement('div');
             newMember.className = 'member-entry mb-4';
             newMember.innerHTML = `
+                <hr class="my-4 border-t border-gray-300">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2">Name</label>
                         <input type="text" name="members[${memberCount}][name]"
-                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Gender</label>
+                        <select name="members[${memberCount}][gender]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight bg-white focus:outline-none focus:shadow-outline">
+                            <option value="">Select Gender</option>
+                            <option value="m">Male</option>
+                            <option value="f">Female</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2">Birthday</label>
                         <input type="date" name="members[${memberCount}][birthday]"
-                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Occupation</label>
+                        <select name="members[${memberCount}][occupation]" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight bg-white focus:outline-none focus:shadow-outline">
+                            <option value="">Select Occupation</option>
+                            <option value="employed">Employed</option>
+                            <option value="unemployed">Unemployed</option>
+                            <option value="student">Student</option>
+                            <option value="retired">Retired</option>
+                            <option value="homemaker">Homemaker</option>
+                        </select>
                     </div>
                 </div>
             `;
